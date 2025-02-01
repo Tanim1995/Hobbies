@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import FirebaseAuthentication from "./components/FirebaseAuthentication";
+import Home from "./components/Home";
+import { gapi } from "gapi-script";
+import "./App.css";
+
+
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const DISCOVERY_DOCS = [import.meta.env.VITE_DISCOVERY_DOCS];
+const SCOPES = import.meta.env.VITE_SCOPES;
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    const initGoogleAPI = () => {
+      if (!gapi.auth2.getAuthInstance()) {
+        gapi.client
+          .init({
+            apiKey: API_KEY,
+            clientId: CLIENT_ID,
+            discoveryDocs: DISCOVERY_DOCS,
+            scope: SCOPES,
+          })
+          .then(() => {
+            console.log("Google API initialized successfully");
+          })
+          .catch((error) => {
+            console.error("Error initializing Google API:", error);
+          });
+      } else {
+        console.log("Google API already initialized.");
+      }
+    };
+
+    gapi.load("client:auth2", initGoogleAPI);
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<FirebaseAuthentication />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
