@@ -25,7 +25,7 @@ const FirebaseAuthentication = () => {
         displayName: email.split("@")[0],
       });
       const userName = auth.currentUser.displayName;
-      alert(`User ${userName} signed up!`);
+      
       setEmail("");
       setPassword("");
     } catch (error) {
@@ -39,7 +39,7 @@ const FirebaseAuthentication = () => {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/home");
       const userName = auth.currentUser.displayName;
-      alert(`User ${userName} signed in!`);
+      
       setEmail("");
       setPassword("");
     } catch (error) {
